@@ -1,0 +1,52 @@
+#version: '3'
+#services:
+#
+#  db:
+#    build: ./Docker-Files/db
+#    container_name: mongodb
+#    ports:
+#      - "27017:27017"
+#    volumes:
+#      - ~/Documents/data/db:/data/db
+#
+#  app:
+#    build:
+#      context: ./Docker-Files/java
+#      dockerfile: Dockerfile
+#    container_name: app
+#    working_dir: /opt/app
+#    restart: always
+#    image: app
+#    ports:
+#      - 8182:8080
+#    depends_on:
+#      - db
+
+version: '3.1'
+
+services:
+  app:
+    build: .
+    # image: registry.gitlab.com/idgst/springboot-mongo-demo:latest
+    restart: always
+    ports:
+      - 8182:8080
+    working_dir: ./target
+    volumes:
+          - ./app:/app
+          - ~/.m2:/root/.m2
+    depends_on:
+      - mongo
+    command: java -jar app-1.jar
+
+  mongo:
+    build: ./Docker-Files/db
+    ports:  # for demo/debug purpose only
+     - 27017:27017
+    volumes:
+      - ~/Documents/data/db:/data/db
+      - ~/Documents/data/bkp:/data/bkp
+    restart: always
+   # environment:
+    #        - MONGO_INITDB_ROOT_USERNAME=admin
+     #       - MONGO_INITDB_ROOT_PASSWORD=admin
